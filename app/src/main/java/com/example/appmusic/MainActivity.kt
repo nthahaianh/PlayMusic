@@ -5,6 +5,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.os.*
 import android.util.Log
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -15,6 +16,7 @@ import com.example.appmusic.MyService.Companion.ON_PREVIOUS
 import com.example.appmusic.MyService.Companion.ON_RESUME
 import com.example.appmusic.MyService.Companion.ON_SHUFFLE
 import com.example.appmusic.MyService.Companion.ON_UN_SHUFFLE
+import com.example.appmusic.MyService.Companion.mediaPlayer
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -26,8 +28,6 @@ class MainActivity : AppCompatActivity() {
     var isShuffle = false
     var isPlaySong: Boolean = false
     var startOrResume= ON_START
-    lateinit var handler: Handler
-    lateinit var runnable: Runnable
     private var isConnected: Boolean = false
 
     private val myBroadcast = object : BroadcastReceiver() {
@@ -47,10 +47,46 @@ class MainActivity : AppCompatActivity() {
                 songs= MyService.songs
                 var nowSong = songs[index]
                 main_tvSong.text = nowSong.title
+
+                var currentProgress = sharedPreferences.getInt("currentProgress", 0)
+                val totalDuration = nowSong.duration
+                var currentPos = currentProgress
+                main_tvMaxTime.text = millionSecondsToTime(totalDuration)
+                main_tvCurrentTime.text = intToTime(currentPos)
+                seekBar.max = totalDuration.toInt()
+                val handler = Handler(Looper.getMainLooper())
+                val runnable = object : Runnable {
+                    override fun run() {
+                        currentPos = mediaPlayer.currentPosition
+                        main_tvCurrentTime.text = intToTime(currentPos)
+                        seekBar.progress = currentPos
+                        handler.postDelayed(this, 1000)
+                    }
+                }
+                handler.postDelayed(runnable, 1000)
+                seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(
+                        seekBar: SeekBar,
+                        progress: Int,
+                        fromUser: Boolean
+                    ) {
+
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        mediaPlayer.seekTo(seekBar.progress)
+                    }
+
+                })
             }
             ON_PAUSE -> {
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
                 updateBtnPlay()
+
             }
             MyService.ON_STOP -> {
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
@@ -63,6 +99,46 @@ class MainActivity : AppCompatActivity() {
             ON_RESUME -> {
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
                 updateBtnPlay()
+                var index = sharedPreferences.getInt("currentSongIndex", 0)
+                isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
+                songs= MyService.songs
+                var nowSong = songs[index]
+                main_tvSong.text = nowSong.title
+
+                var currentProgress = sharedPreferences.getInt("currentProgress", 0)
+                val totalDuration = nowSong.duration
+                var currentPos = currentProgress
+                main_tvMaxTime.text = millionSecondsToTime(totalDuration)
+                main_tvCurrentTime.text = intToTime(currentPos)
+                seekBar.max = totalDuration.toInt()
+                val handler = Handler(Looper.getMainLooper())
+                val runnable = object : Runnable {
+                    override fun run() {
+                        currentPos = mediaPlayer.currentPosition
+                        main_tvCurrentTime.text = intToTime(currentPos)
+                        seekBar.progress = currentPos
+                        handler.postDelayed(this, 1000)
+                    }
+                }
+                handler.postDelayed(runnable, 1000)
+                seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(
+                        seekBar: SeekBar,
+                        progress: Int,
+                        fromUser: Boolean
+                    ) {
+
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        mediaPlayer.seekTo(seekBar.progress)
+                    }
+
+                })
             }
         }
 

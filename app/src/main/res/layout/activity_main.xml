@@ -50,40 +50,40 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/line1" />
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_margin="11dp"-->
-<!--        android:background="@drawable/background2"-->
-<!--        android:gravity="center"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:paddingHorizontal="20dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@id/line3"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="@id/line2">-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="11dp"
+        android:background="@drawable/background2"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/line3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/line2">
 
-<!--        <TextView-->
-<!--            android:id="@+id/main_tvCurrentTime"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="00:00"-->
-<!--            android:textColor="@color/greentext"-->
-<!--            android:textSize="12sp" />-->
+        <TextView
+            android:id="@+id/main_tvCurrentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@color/greentext"
+            android:textSize="12sp" />
 
-<!--        <SeekBar-->
-<!--            android:id="@+id/seekBar"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1" />-->
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/main_tvMaxTime"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="00:00"-->
-<!--            android:textColor="@color/greentext"-->
-<!--            android:textSize="12sp" />-->
-<!--    </LinearLayout>-->
+        <TextView
+            android:id="@+id/main_tvMaxTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@color/greentext"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

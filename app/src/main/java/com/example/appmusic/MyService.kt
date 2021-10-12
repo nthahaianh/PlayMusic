@@ -7,9 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Binder
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.RemoteViews
@@ -20,6 +18,7 @@ import com.example.appmusic.MyApplication.Companion.CHANNEL_ID
 class MyService : Service() {
     companion object {
         var songs: MutableList<MySong> = mutableListOf()
+        var mediaPlayer = MediaPlayer()
         const val ON_PAUSE = 11
         const val ON_START = 12
         const val ON_RESUME = 13
@@ -28,8 +27,8 @@ class MyService : Service() {
         const val ON_NEXT = 16
         const val ON_SHUFFLE = 17
         const val ON_UN_SHUFFLE = 18
+        const val ON_TIME = 19
     }
-    var mediaPlayer = MediaPlayer()
     lateinit var mSong: MySong
     var typeRepeat: Int = 0
     lateinit var sharedPreferences: SharedPreferences
@@ -102,6 +101,18 @@ class MyService : Service() {
         }
     }
 
+    val handler = Handler(Looper.getMainLooper())
+    val runnable = object : Runnable {
+        override fun run() {
+            var currentPos = mediaPlayer.currentPosition
+            Log.e("runnable","$currentPos")
+            val editor = sharedPreferences.edit()
+            editor.putInt("currentProgress", currentPos)
+            editor.apply()
+            sendActiontoActivity(ON_TIME)
+            handler.postDelayed(this, 1000)
+        }
+    }
     fun startSong() {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer()
@@ -115,6 +126,7 @@ class MyService : Service() {
         mediaPlayer.setDataSource(this, Uri.parse(mSong.data))
         mediaPlayer.prepare()
         mediaPlayer.start()
+        handler.postDelayed(runnable,1000)
         sendNotification(songs[currentSongIndex])
         val editor = sharedPreferences.edit()
         editor.putBoolean("isPlaySong", true)
