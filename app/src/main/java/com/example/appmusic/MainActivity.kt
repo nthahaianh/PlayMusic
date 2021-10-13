@@ -41,47 +41,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI(action: Int) {
         when (action) {
             ON_START -> {
-                indexCurrentSong = sharedPreferences.getInt("currentSongIndex", 0)
-                isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
-                updateBtnPlay()
-                songs= MyService.songs
-                var nowSong = songs[indexCurrentSong]
-                main_tvSong.text = nowSong.title
-
-                var currentProgress = sharedPreferences.getInt("currentProgress", 0)
-                val totalDuration = nowSong.duration
-                var currentPos = currentProgress
-                main_tvMaxTime.text = millionSecondsToTime(totalDuration)
-                main_tvCurrentTime.text = intToTime(currentPos)
-                seekBar.max = totalDuration.toInt()
-                val handler = Handler(Looper.getMainLooper())
-                val runnable = object : Runnable {
-                    override fun run() {
-                        currentPos = mediaPlayer.currentPosition
-                        main_tvCurrentTime.text = intToTime(currentPos)
-                        seekBar.progress = currentPos
-                        handler.postDelayed(this, 1000)
-                    }
-                }
-                handler.postDelayed(runnable, 1000)
-                seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(
-                        seekBar: SeekBar,
-                        progress: Int,
-                        fromUser: Boolean
-                    ) {
-
-                    }
-
-                    override fun onStartTrackingTouch(seekBar: SeekBar) {
-
-                    }
-
-                    override fun onStopTrackingTouch(seekBar: SeekBar) {
-                        mediaPlayer.seekTo(seekBar.progress)
-                    }
-
-                })
+                setUpSeekBar()
             }
             ON_PAUSE -> {
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
@@ -97,51 +57,54 @@ class MainActivity : AppCompatActivity() {
                 editor.apply()
             }
             ON_RESUME -> {
-                isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
-                updateBtnPlay()
-                var index = sharedPreferences.getInt("currentSongIndex", 0)
-                isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
-                songs= MyService.songs
-                var nowSong = songs[index]
-                main_tvSong.text = nowSong.title
-
-                var currentProgress = sharedPreferences.getInt("currentProgress", 0)
-                val totalDuration = nowSong.duration
-                var currentPos = currentProgress
-                main_tvMaxTime.text = millionSecondsToTime(totalDuration)
-                main_tvCurrentTime.text = intToTime(currentPos)
-                seekBar.max = totalDuration.toInt()
-                val handler = Handler(Looper.getMainLooper())
-                val runnable = object : Runnable {
-                    override fun run() {
-                        currentPos = mediaPlayer.currentPosition
-                        main_tvCurrentTime.text = intToTime(currentPos)
-                        seekBar.progress = currentPos
-                        handler.postDelayed(this, 1000)
-                    }
-                }
-                handler.postDelayed(runnable, 1000)
-                seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(
-                        seekBar: SeekBar,
-                        progress: Int,
-                        fromUser: Boolean
-                    ) {
-
-                    }
-
-                    override fun onStartTrackingTouch(seekBar: SeekBar) {
-
-                    }
-
-                    override fun onStopTrackingTouch(seekBar: SeekBar) {
-                        mediaPlayer.seekTo(seekBar.progress)
-                    }
-
-                })
+                setUpSeekBar()
             }
         }
 
+    }
+
+    private fun setUpSeekBar() {
+        isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
+        updateBtnPlay()
+        var index = sharedPreferences.getInt("currentSongIndex", 0)
+        songs = MyService.songs
+        var nowSong = songs[index]
+        main_tvSong.text = nowSong.title
+
+        var currentProgress = sharedPreferences.getInt("currentProgress", 0)
+        val totalDuration = nowSong.duration
+        var currentPos = currentProgress
+        main_tvMaxTime.text = millionSecondsToTime(totalDuration)
+        main_tvCurrentTime.text = intToTime(currentPos)
+        seekBar.max = totalDuration.toInt()
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = object : Runnable {
+            override fun run() {
+                currentPos = mediaPlayer.currentPosition
+                main_tvCurrentTime.text = intToTime(currentPos)
+                seekBar.progress = currentPos
+                handler.postDelayed(this, 1000)
+            }
+        }
+        handler.postDelayed(runnable, 1000)
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                    seekBar: SeekBar,
+                    progress: Int,
+                    fromUser: Boolean
+            ) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                mediaPlayer.seekTo(seekBar.progress)
+            }
+
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,10 +121,14 @@ class MainActivity : AppCompatActivity() {
         Log.e("Log","$indexCurrentSong,$typeRepeat,$isShuffle,$isPlaySong,$isConnected")
         try{
             songs= MyService.songs
+//            setUpSeekBar()
             main_tvSong.text = songs[indexCurrentSong].title
             Log.e("Log2", "${songs.size}-${songs[indexCurrentSong].title}")
         }catch (e:Exception){
             e.stackTrace
+        }
+        if(startOrResume== ON_RESUME){
+            setUpSeekBar()
         }
         updateIconRepeat()
         updateBtnPlay()
@@ -205,6 +172,8 @@ class MainActivity : AppCompatActivity() {
             startService(intent)
         }
         main_ivPlaylist.setOnClickListener {
+            val intentService = Intent(this, MyService::class.java)
+            startService(intentService)
             val intent = Intent(this, SongsActivity::class.java)
             startActivity(intent)
         }
@@ -289,7 +258,15 @@ class MainActivity : AppCompatActivity() {
                     if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         Toast.makeText(this, "Please allow storage permission", Toast.LENGTH_SHORT)
                             .show()
+                        main_btnNext_song.isEnabled=false
+                        main_btnPlay.isEnabled=false
+                        main_btnPrevious_song.isEnabled=false
+                        main_ivPlaylist.isEnabled=false
                     } else {
+                        main_btnNext_song.isEnabled=true
+                        main_btnPlay.isEnabled=true
+                        main_btnPrevious_song.isEnabled=true
+                        main_ivPlaylist.isEnabled=true
 //                        loadSongs()
 //                        startService(Intent(this,MyService::class.java))
                     }

@@ -55,8 +55,9 @@ class MyService : Service() {
             mediaPlayer.stop()
         }
         val editor = sharedPreferences.edit()
-        editor.putInt("startOrResume", ON_START)
         editor.putBoolean("isPlaySong", false)
+        editor.putInt("startOrResume", ON_START)
+        editor.putInt("currentProgress",0)
         editor.apply()
         Log.e("MyService", "Destroy")
     }
@@ -232,9 +233,20 @@ class MyService : Service() {
             ))
             remoteViews.setImageViewResource(R.id.notification_btnPlay,R.drawable.ic_pause)
         }else{
-            remoteViews.setOnClickPendingIntent(R.id.notification_btnPlay,getPendingIntent(this,
-                ON_RESUME
-            ))
+            var startOrResume = sharedPreferences.getInt("startOrResume", ON_START)
+            if (startOrResume== ON_START){
+                remoteViews.setOnClickPendingIntent(R.id.notification_btnPlay,getPendingIntent(this,
+                        ON_START
+                ))
+                startOrResume = ON_RESUME
+                val editor = sharedPreferences.edit()
+                editor.putInt("startOrResume", startOrResume)
+                editor.apply()
+            }else{
+                remoteViews.setOnClickPendingIntent(R.id.notification_btnPlay,getPendingIntent(this,
+                        ON_RESUME
+                ))
+            }
             remoteViews.setImageViewResource(R.id.notification_btnPlay,R.drawable.ic_play_arrow)
         }
         remoteViews.setOnClickPendingIntent(R.id.notification_btnNext_song,getPendingIntent(this,

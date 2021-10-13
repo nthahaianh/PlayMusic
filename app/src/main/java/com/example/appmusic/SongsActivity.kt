@@ -109,6 +109,8 @@ class SongsActivity : AppCompatActivity() {
             indexCurrentSong=it
             val editor = sharedPreferences.edit()
             editor.putInt("currentSongIndex",indexCurrentSong)
+            startOrResume = ON_RESUME
+            editor.putInt("startOrResume", startOrResume)
             editor.apply()
             val intent = Intent(this, MyService::class.java)
             stopService(intent)
