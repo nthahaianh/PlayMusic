@@ -14,8 +14,6 @@ import com.example.appmusic.MyService.Companion.ON_PAUSE
 import com.example.appmusic.MyService.Companion.ON_START
 import com.example.appmusic.MyService.Companion.ON_PREVIOUS
 import com.example.appmusic.MyService.Companion.ON_RESUME
-import com.example.appmusic.MyService.Companion.ON_SHUFFLE
-import com.example.appmusic.MyService.Companion.ON_UN_SHUFFLE
 import com.example.appmusic.MyService.Companion.mediaPlayer
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -172,8 +170,6 @@ class MainActivity : AppCompatActivity() {
             startService(intent)
         }
         main_ivPlaylist.setOnClickListener {
-            val intentService = Intent(this, MyService::class.java)
-            startService(intentService)
             val intent = Intent(this, SongsActivity::class.java)
             startActivity(intent)
         }
@@ -267,8 +263,6 @@ class MainActivity : AppCompatActivity() {
                         main_btnPlay.isEnabled=true
                         main_btnPrevious_song.isEnabled=true
                         main_ivPlaylist.isEnabled=true
-//                        loadSongs()
-//                        startService(Intent(this,MyService::class.java))
                     }
                 }
             }

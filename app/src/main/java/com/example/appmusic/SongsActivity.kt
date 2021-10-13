@@ -4,6 +4,7 @@ import android.content.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +37,6 @@ class SongsActivity : AppCompatActivity() {
                 indexCurrentSong = sharedPreferences.getInt("currentSongIndex", 0)
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
                 updateBtnPlay()
-//                songs.clear()
                 songs= MyService.songs
                 var nowSong = songs[indexCurrentSong]
                 list_song_tvTitle.text = nowSong.title
@@ -63,14 +63,18 @@ class SongsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_songs)
         songs= MyService.songs
+        if (songs.isEmpty()) loadSongs()
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcast, IntentFilter("ac_service_to_main"))
         sharedPreferences = this.getSharedPreferences("SharePreferences", Context.MODE_PRIVATE)
         indexCurrentSong = sharedPreferences.getInt("currentSongIndex",0)
         isPlaySong = sharedPreferences.getBoolean("isPlaySong",false)
         startOrResume = sharedPreferences.getInt("startOrResume", ON_START)
         updateBtnPlay()
-        if (songs.size>0&&songs!=null){
+        try{
             list_song_tvTitle.text = songs[indexCurrentSong].title
+        } catch (e:Exception){
+            Log.e("Songs","${songs.size}  -  ${songs[indexCurrentSong]}")
+            e.stackTrace
         }
         list_song_btnPlay.setOnClickListener {
             if (isPlaySong){
@@ -142,6 +146,7 @@ class SongsActivity : AppCompatActivity() {
         }
     }
     private fun loadSongs() {
+        Log.e("SongsAct","Load songs")
         val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
@@ -159,16 +164,19 @@ class SongsActivity : AppCompatActivity() {
             null
         )
         while (cursor!!.moveToNext()) {
-            songs.add(
-                MySong(
-                    cursor.getString(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getString(4),
-                    cursor.getLong(5)
+            if (cursor.getLong(5)>0){
+                songs.add(
+                        MySong(
+                                cursor.getString(0),
+                                cursor.getString(1),
+                                cursor.getString(2),
+                                cursor.getString(3),
+                                cursor.getString(4),
+                                cursor.getLong(5)
+                        )
                 )
-            )
+            }
         }
     }
+
 }

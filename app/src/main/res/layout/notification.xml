@@ -21,8 +21,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:padding="3dp"
-            android:text="AppMusic" />
+            android:padding="3dp"/>
 
         <TextView
             android:id="@+id/notification_tvText"
@@ -31,8 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:padding="3dp"
-            android:text="AppMusic" />
+            android:padding="3dp"/>
     </LinearLayout>
 
     <ImageView
