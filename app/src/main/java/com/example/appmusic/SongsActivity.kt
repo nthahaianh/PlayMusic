@@ -33,12 +33,12 @@ class SongsActivity : AppCompatActivity() {
     private fun updateUI(action: Int) {
         when (action) {
             ON_START -> {
-                var index = sharedPreferences.getInt("currentSongIndex", 0)
+                indexCurrentSong = sharedPreferences.getInt("currentSongIndex", 0)
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
                 updateBtnPlay()
 //                songs.clear()
                 songs= MyService.songs
-                var nowSong = songs[index]
+                var nowSong = songs[indexCurrentSong]
                 list_song_tvTitle.text = nowSong.title
             }
             ON_PAUSE -> {

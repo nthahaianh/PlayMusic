@@ -41,11 +41,11 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI(action: Int) {
         when (action) {
             ON_START -> {
-                var index = sharedPreferences.getInt("currentSongIndex", 0)
+                indexCurrentSong = sharedPreferences.getInt("currentSongIndex", 0)
                 isPlaySong = sharedPreferences.getBoolean("isPlaySong", false)
                 updateBtnPlay()
                 songs= MyService.songs
-                var nowSong = songs[index]
+                var nowSong = songs[indexCurrentSong]
                 main_tvSong.text = nowSong.title
 
                 var currentProgress = sharedPreferences.getInt("currentProgress", 0)
@@ -238,15 +238,8 @@ class MainActivity : AppCompatActivity() {
     private fun updateIconShuffle() {
         if (isShuffle) {
             main_ivShuffle.setImageResource(R.drawable.ic__shuffle_choose)
-            val intent = Intent(this, MyService::class.java)
-            intent.putExtra("action", ON_SHUFFLE)
-            startService(intent)
         } else {
             main_ivShuffle.setImageResource(R.drawable.ic_shuffle)
-            songs.shuffle()
-            val intent = Intent(this, MyService::class.java)
-            intent.putExtra("action", ON_UN_SHUFFLE)
-            startService(intent)
         }
         val editor = sharedPreferences.edit()
         editor.putBoolean("isShuffle", isShuffle)

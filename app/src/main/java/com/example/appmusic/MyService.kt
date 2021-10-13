@@ -14,6 +14,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.appmusic.MyApplication.Companion.CHANNEL_ID
+import kotlin.random.Random
 
 class MyService : Service() {
     companion object {
@@ -151,13 +152,13 @@ class MyService : Service() {
     fun pauseSong() {
         try{
             var isPlaying = sharedPreferences.getBoolean("isPlaySong",false)
-            var currentProgress = sharedPreferences.getInt("currentProgress", 0)
-            currentProgress = mediaPlayer!!.currentPosition
             if(mediaPlayer!=null && isPlaying){
                 mediaPlayer.pause()
             }
             val editor = sharedPreferences.edit()
             editor.putBoolean("isPlaySong", false)
+            var currentProgress = mediaPlayer!!.currentPosition
+            editor.putInt("currentProgress",currentProgress)
             editor.apply()
             var currentSongIndex = sharedPreferences.getInt("currentSongIndex", 0)
             sendNotification(songs[currentSongIndex])
@@ -187,6 +188,10 @@ class MyService : Service() {
         currentSongIndex++
         if (currentSongIndex >= (songs.size))
             currentSongIndex = 0
+        var isShuffle = sharedPreferences.getBoolean("isShuffle", false)
+        if(isShuffle){
+            currentSongIndex = Random.nextInt(songs.size-1)
+        }
         val editor = sharedPreferences.edit()
         editor.putInt("currentSongIndex", currentSongIndex)
         editor.apply()
